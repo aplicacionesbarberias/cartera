@@ -991,7 +991,8 @@ async function entrar(user) {
   else {
     app.innerHTML = '<div class="loading"><div class="spin"></div></div>';
     const [aut] = await Promise.all([sb.from('usuarios_autorizados').select('email,nombre,rol').maybeSingle(), DB.loadAll().catch(e => console.error(e))]);
-    if (!aut.data) { await sb.auth.signOut(); TABLAS.forEach(t => S[t] = []); vLogin('Tu correo no está autorizado para usar esta aplicación.'); return; }
+    if (aut.error) { console.error(aut.error); await sb.auth.signOut(); TABLAS.forEach(t => S[t] = []); vLogin('Error de permisos en la base de datos (' + (aut.error.code || '') + '): ' + aut.error.message); return; }
+    if (!aut.data) { await sb.auth.signOut(); TABLAS.forEach(t => S[t] = []); vLogin('El correo ' + ((user && user.email) || '') + ' no está en la lista de autorizados.'); return; }
     S.user = { email: aut.data.email, nombre: aut.data.nombre, rol: aut.data.rol };
     suscribir();
   }
