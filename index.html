@@ -5,12 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#0f766e">
-<title>Cartera de Préstamos</title>
+<meta name="theme-color" content="#0b2a5b">
+<title>V&amp;A · Tu cartera siempre contigo</title>
+<meta name="description" content="La app que te ayuda a saber qué prestas, a quién y cuánto cobrar.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="V&amp;A">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Vista previa al compartir (WhatsApp, Facebook…). Cambia la URL si la dirección de GitHub es otra -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="V&amp;A">
+<meta property="og:title" content="V&amp;A · Tu cartera, en orden">
+<meta property="og:description" content="La app que te ayuda a saber qué prestas, a quién y cuánto cobrar.">
+<meta property="og:image" content="URL_DE_LA_APP/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="URL_DE_LA_APP/">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 :root{
-  --bg:#f4f6f3; --surface:#fff; --surface-2:#eef1ed; --line:#e1e6e0; --text:#14201b; --muted:#5a6a62; --faint:#8b978f;
-  --accent:#0f766e; --accent-ink:#fff; --accent-soft:#dff2ee;
+  --bg:#f3f6fb; --surface:#fff; --surface-2:#edf1f8; --line:#dfe5ef; --text:#0f1a2e; --muted:#56637a; --faint:#8a95a8;
+  --accent:#1a56db; --accent-ink:#fff; --accent-soft:#e3ecff;
   --verde:#15803d; --verde-s:#dcfce7; --amarillo:#a16207; --amarillo-s:#fef3c7; --rojo:#b91c1c; --rojo-s:#fee2e2;
   --azul:#1d4ed8; --azul-s:#dbeafe; --gris:#5f6b73; --gris-s:#eceff1;
   --d-verde:#22c55e; --d-amarillo:#f59e0b; --d-rojo:#ef4444; --d-azul:#3b82f6; --d-gris:#9ca3af;
@@ -19,16 +37,16 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0d1311; --surface:#141c19; --surface-2:#1b2521; --line:#25322d; --text:#e7eeea; --muted:#9caba4; --faint:#6e7c75;
-    --accent:#2dd4bf; --accent-ink:#04201c; --accent-soft:#123630;
+    --bg:#0a1324; --surface:#111c33; --surface-2:#18253f; --line:#24324f; --text:#e8eefb; --muted:#9aa8c2; --faint:#6b7894;
+    --accent:#5b9bff; --accent-ink:#04122e; --accent-soft:#13264a;
     --verde:#4ade80; --verde-s:#12301f; --amarillo:#fbbf24; --amarillo-s:#3a2c0b; --rojo:#f87171; --rojo-s:#3b1515;
     --azul:#60a5fa; --azul-s:#142a4a; --gris:#a3acb3; --gris-s:#22292b; --shadow:0 10px 40px rgba(0,0,0,.5);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0d1311; --surface:#141c19; --surface-2:#1b2521; --line:#25322d; --text:#e7eeea; --muted:#9caba4; --faint:#6e7c75;
-  --accent:#2dd4bf; --accent-ink:#04201c; --accent-soft:#123630;
+  --bg:#0a1324; --surface:#111c33; --surface-2:#18253f; --line:#24324f; --text:#e8eefb; --muted:#9aa8c2; --faint:#6b7894;
+  --accent:#5b9bff; --accent-ink:#04122e; --accent-soft:#13264a;
   --verde:#4ade80; --verde-s:#12301f; --amarillo:#fbbf24; --amarillo-s:#3a2c0b; --rojo:#f87171; --rojo-s:#3b1515;
   --azul:#60a5fa; --azul-s:#142a4a; --gris:#a3acb3; --gris-s:#22292b; --shadow:0 10px 40px rgba(0,0,0,.5);
   color-scheme: dark;
@@ -291,6 +309,20 @@ tr.is-hoy td{background:color-mix(in srgb,var(--d-amarillo) 8%,transparent)}
   .bnav{grid-template-columns:repeat(5,1fr)}
 }
 @media (max-width:420px){.g3{gap:0 8px}}
+
+/* ---- Marca V&A ---- */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url(marca-sello.png) center 60%/min(80vw,680px) no-repeat;opacity:.08}
+:root[data-theme="dark"] body::before{filter:invert(1) brightness(2);opacity:.04}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) body::before{filter:invert(1) brightness(2);opacity:.04}}
+body{background:var(--bg);isolation:isolate}
+.shell,.main{background:transparent}
+.caja{background:linear-gradient(135deg,#0b2a5b 0%,#1a56db 100%);color:#fff}
+.card,.kpi{background:color-mix(in srgb,var(--surface) 88%,transparent)}
+.logo.img{background:#0b2a5b url(icon-192.png) center/cover;color:transparent}
+.logo.img .ic{display:none}
+.login{background:linear-gradient(180deg,rgba(6,16,38,.72),rgba(6,16,38,.88)),url(fondo.jpg) center/cover no-repeat;background-color:#0b2a5b}
+.login-card .logo.img{width:46px;height:46px;border-radius:12px}
+.login-card .brand b{font-size:17px}
 </style>
 </head>
 <body>
@@ -305,7 +337,8 @@ tr.is-hoy td{background:color-mix(in srgb,var(--d-amarillo) 8%,transparent)}
 const CONFIG = {
   SUPABASE_URL: 'https://jidyvhewineyzpvsgtwq.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppZHl2aGV3aW5leXpwdnNndHdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3OTQzNzIsImV4cCI6MjEwODM3MDM3Mn0.VayBS_VWHzfNwJiga9C2WD9A-CJjoTdqIvhuak6K7mM',
-  NOMBRE_NEGOCIO: 'Mi Cartera',
+  NOMBRE_NEGOCIO: 'V&A',
+  LEMA: 'Tu cartera siempre contigo',
   INACTIVIDAD_MIN: 30,         // cierra sesión tras X minutos sin uso
   INDICATIVO_PAIS: '57',       // WhatsApp (Colombia = 57)
 };
@@ -678,7 +711,7 @@ const noEnc = (href, txt) => `<a class="back" href="${href}">${I.atras}${txt}</a
 const app = $('#app');
 function vShell() {
   const nav = [['inicio', 'Inicio', I.panel], ['clientes', 'Clientes', I.clientes], ['caja', 'Caja', I.caja]];
-  const brand = `<div class="brand"><span class="logo">${I.cobrar}</span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>Cartera privada</small></div></div>`;
+  const brand = `<div class="brand"><span class="logo img">${I.cobrar}</span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>${esc(CONFIG.LEMA)}</small></div></div>`;
   const tools = `<button class="icon-btn" data-act="privado" title="Ocultar / mostrar montos">${document.body.classList.contains('privado') ? I.ojoNo : I.ojo}</button><button class="icon-btn" data-act="ajustes" title="Ajustes">${I.ajustes}</button><button class="icon-btn" data-act="salir" title="Cerrar sesión">${I.salir}</button>`;
   app.innerHTML = `${DEMO ? '<div class="demo-bar">Modo de prueba · los datos se guardan solo en este navegador. Conecta Supabase para usarla de verdad.</div>' : ''}
   <div class="shell">
@@ -913,7 +946,7 @@ document.addEventListener('input', ev => {
 function vLogin(msg, ok) {
   S.user = null;
   app.innerHTML = `<div class="login"><form class="login-card" id="f-login">
-    <div class="brand"><span class="logo">${I.candado}</span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>Acceso solo para personas autorizadas</small></div></div>
+    <div class="brand"><span class="logo img"></span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>${esc(CONFIG.LEMA)} · acceso privado</small></div></div>
     ${DEMO ? '<div class="note">Modo de prueba: escribe cualquier correo y contraseña.</div>' : ''}
     ${msg ? `<div class="${ok ? 'okmsg' : 'alert'}">${esc(msg)}</div>` : ''}
     <label>Correo<input name="email" type="email" required autocomplete="username" inputmode="email"></label>
@@ -939,7 +972,7 @@ function vLogin(msg, ok) {
 }
 function vNuevaClave() {
   app.innerHTML = `<div class="login"><form class="login-card" id="f-clave">
-    <div class="brand"><span class="logo">${I.candado}</span><div><b>Crea tu contraseña</b><small>Solo tú la vas a conocer</small></div></div>
+    <div class="brand"><span class="logo img"></span><div><b>Crea tu contraseña</b><small>Solo tú la vas a conocer</small></div></div>
     <label>Nueva contraseña<input name="p1" type="password" minlength="8" required autocomplete="new-password"></label>
     <label>Repítela<input name="p2" type="password" minlength="8" required autocomplete="new-password"></label>
     <button class="btn primary block" type="submit" style="height:44px">Guardar contraseña</button></form></div><div id="toasts"></div>`;
