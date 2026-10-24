@@ -244,7 +244,7 @@ tr.is-hoy td{background:color-mix(in srgb,var(--d-amarillo) 8%,transparent)}
   .main{padding:8px 16px 104px}
   .mtop{display:flex;align-items:center;gap:8px;padding:10px 12px 4px 16px;position:sticky;top:0;z-index:20;background:var(--bg)}
   .mtop .brand{padding:0;flex:1}
-  .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bnav{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
   .bnav a,.bnav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);padding:4px 0;background:none;border:0;cursor:pointer}
   .bnav a.on{color:var(--accent)}
   .bnav .plus{width:46px;height:46px;border-radius:14px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin:-14px auto 0;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 40%,transparent)}
@@ -306,7 +306,7 @@ tr.is-hoy td{background:color-mix(in srgb,var(--d-amarillo) 8%,transparent)}
 @media (max-width:899px){
   .hero{grid-template-columns:minmax(0,1fr)}
   .steps{grid-template-columns:minmax(0,1fr)}
-  .bnav{grid-template-columns:repeat(5,1fr)}
+  .bnav{grid-template-columns:repeat(3,1fr)}
 }
 @media (max-width:420px){.g3{gap:0 8px}}
 
@@ -323,6 +323,7 @@ body{background:var(--bg);isolation:isolate}
 .login{background:linear-gradient(180deg,rgba(6,16,38,.72),rgba(6,16,38,.88)),url(fondo.jpg) center/cover no-repeat;background-color:#0b2a5b}
 .login-card .logo.img{width:46px;height:46px;border-radius:12px}
 .login-card .brand b{font-size:17px}
+.top-act .btn.keep .lbl{display:inline!important}
 </style>
 </head>
 <body>
@@ -600,7 +601,7 @@ function vInicio() {
   const fecha = new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
   const vacio = !S.prestamos.length;
   return head('Inicio', fecha.charAt(0).toUpperCase() + fecha.slice(1),
-    `${act.length ? `<button class="btn" data-act="pago-rapido">${I.cobrar}<span class="lbl">Registrar pago</span></button>` : ''}<button class="btn primary" data-act="nuevo-prestamo">${I.plus}<span class="lbl">Nuevo préstamo</span></button>`) +
+    `${act.length ? `<button class="btn keep" data-act="pago-rapido">${I.cobrar}<span class="lbl">Registrar pago</span></button>` : ''}<button class="btn primary keep" data-act="nuevo-prestamo">${I.plus}<span class="lbl">Nuevo préstamo</span></button>`) +
   `<div class="hero">
     <div class="caja"><small>Dinero disponible para prestar</small><div class="big">${T.disponible < 0 ? '−' : ''}${money(Math.abs(T.disponible))}</div>
       <div class="btns"><button class="btn" data-act="aporte">${I.plus}Agregar dinero</button><button class="btn" data-act="retiro">Sacar dinero</button></div></div>
@@ -613,7 +614,7 @@ function vInicio() {
   (vacio ? `<section class="card welcome"><h3>Empecemos</h3><p class="muted" style="margin:0">La app está vacía. Tres pasos y ya queda andando:</p>
       <div class="steps">
         <div class="step"><span class="n">1</span><b>Dinero para prestar</b><p>Registra cuánto dinero tienes disponible.</p><button class="btn sm" data-act="aporte">Agregar dinero</button></div>
-        <div class="step"><span class="n">2</span><b>Primer préstamo</b><p>Cliente, monto, interés, meses y cuotas. La app calcula todo.</p><button class="btn sm primary" data-act="nuevo-prestamo">Nuevo préstamo</button></div>
+        <div class="step"><span class="n">2</span><b>Primer préstamo</b><p>Toca <b>“Nuevo préstamo”</b> arriba: cliente, monto, interés, meses y cuotas. La app calcula todo.</p></div>
         <div class="step"><span class="n">3</span><b>Pagos</b><p>Cada vez que te paguen, toca “Cobrar”. Las cuentas se actualizan solas.</p></div>
       </div></section>` :
   `<div class="sem">${tile('verde', 'Al día', 'Deben')}${tile('amarillo', 'Atrasados', `1 a ${S.aj.dias_mora - 1} días`)}${tile('rojo', 'En mora', `${S.aj.dias_mora}+ días`)}</div>
@@ -622,7 +623,8 @@ function vInicio() {
        ${cobros.map(filaCobro).join('') || empty('Nadie debe nada hoy.')}</section>
      <section class="card list"><div class="sec-h"><h3>Próximos 7 días</h3></div>
        ${prox.map(filaProx).join('') || empty('No hay cuotas en los próximos 7 días.')}</section>
-   </div>`);
+   </div>`) + (movimientos().length ? `<h2 class="h2">Últimos movimientos</h2><section class="card list">${filasMovs(movimientos().slice(0, S.f.verMovs ? 200 : 8))}
+     ${movimientos().length > 8 ? `<div class="row"><button class="link" data-act="ver-movs">${S.f.verMovs ? 'Ver menos' : `Ver todos (${movimientos().length})`}</button></div>` : ''}</section>` : '');
 }
 
 function vClientes() {
@@ -648,7 +650,7 @@ function vCliente(id) {
       `${wa ? `<a class="btn" href="${wa}" target="_blank" rel="noopener">${I.msg}<span class="lbl">WhatsApp</span></a>` : ''}
        <button class="btn" data-act="editar-cliente" data-id="${id}">${I.editar}<span class="lbl">Editar</span></button>
        ${isAdmin() && !c.prestamos ? `<button class="btn" data-act="borrar-cliente" data-id="${id}">${I.basura}</button>` : ''}
-       <button class="btn primary" data-act="nuevo-prestamo" data-cliente="${id}">${I.plus}<span class="lbl">Nuevo préstamo</span></button>`) +
+`) +
     `<div class="kpis">
       <div class="kpi"><small>Debe en total</small><b>${money(c.deuda)}</b><em>${plural(c.activos, 'préstamo activo', 'préstamos activos')}</em></div>
       <div class="kpi"><small>Cuotas</small><b>${c.cuotasPag} de ${c.cuotasN}</b><em>Faltan ${c.faltan}</em></div>
@@ -680,49 +682,32 @@ function vPrestamo(id) {
       </section></div>`;
 }
 
-function vCaja() {
-  const T = totales(), f = S.f, h = hoyStr(), d = new Date();
-  const per = { mes: [h.slice(0, 8) + '01', h], ant: [toStr(new Date(d.getFullYear(), d.getMonth() - 1, 1)), toStr(new Date(d.getFullYear(), d.getMonth(), 0))], todo: ['', ''] }[f.periodo];
-  let m = movimientos(); if (per[0]) m = m.filter(x => x.fecha >= per[0] && x.fecha <= per[1]);
+function filasMovs(lista) {
   const LBL = { aporte: 'Dinero agregado', retiro: 'Dinero retirado', prestamo: 'Préstamo entregado', pago: 'Pago recibido' };
   const entra = x => x.tipo === 'aporte' || x.tipo === 'pago';
-  let html = '', last = '';
-  for (const x of m.slice(0, 500)) {
-    if (x.fecha !== last) { last = x.fecha; html += `<div class="day-h">${fFecha(x.fecha)}</div>`; }
+  return lista.map(x => {
     const c = x.cliente_id ? CLI.get(x.cliente_id) || {} : null;
-    const inner = `<span class="mv ${entra(x) ? 'in' : 'out'}">${entra(x) ? '↓' : '↑'}</span><div class="grow"><b>${c ? esc(c.nombre) : LBL[x.tipo]}</b><small>${c ? LBL[x.tipo] : 'Caja'}${x.nota ? ' · ' + esc(x.nota) : ''}</small></div><div class="amt ${entra(x) ? 'pos' : ''}">${entra(x) ? '+' : '−'}${money(x.valor)}</div>`;
-    html += x.prestamo_id ? `<a class="row" href="#/prestamo/${x.prestamo_id}">${inner}</a>` : `<div class="row">${inner}${isAdmin() ? `<button class="icon-btn" data-act="borrar-caja" data-id="${x.id}" title="Borrar">${I.basura}</button>` : ''}</div>`;
-  }
-  const s = t => sum(m.filter(x => x.tipo === t), x => x.valor);
-  return head('Caja', 'El dinero que entra y sale', `<button class="btn" data-act="csv">${I.descargar}<span class="lbl">Exportar a Excel</span></button>`) +
-    `<div class="hero"><div class="caja"><small>Dinero disponible para prestar</small><div class="big">${T.disponible < 0 ? '−' : ''}${money(Math.abs(T.disponible))}</div>
-      <div class="btns"><button class="btn" data-act="aporte">${I.plus}Agregar dinero</button><button class="btn" data-act="retiro">Sacar dinero</button></div></div>
-      <div class="kpis">
-        <div class="kpi"><small>Cobrado ${f.periodo === 'todo' ? '' : 'en el periodo'}</small><b class="t-verde">${money(s('pago'))}</b><em>Pagos de clientes</em></div>
-        <div class="kpi"><small>Prestado ${f.periodo === 'todo' ? '' : 'en el periodo'}</small><b>${money(s('prestamo'))}</b><em>Dinero entregado</em></div>
-        <div class="kpi"><small>Dinero agregado</small><b>${money(s('aporte'))}</b><em>Retirado ${money(s('retiro'))}</em></div>
-        <div class="kpi"><small>Total del negocio</small><b>${money(T.total)}</b><em>Disponible + por cobrar</em></div></div></div>
-    <div class="toolbar"><div class="chips">${[['mes', 'Este mes'], ['ant', 'Mes anterior'], ['todo', 'Todo']].map(([v, l]) => `<button class="chip ${f.periodo === v ? 'on' : ''}" data-act="periodo" data-v="${v}">${l}</button>`).join('')}</div></div>
-    <section class="card list">${html || empty('No hay movimientos en este periodo.')}</section>`;
+    const inner = `<span class="mv ${entra(x) ? 'in' : 'out'}">${entra(x) ? '↓' : '↑'}</span><div class="grow"><b>${c ? esc(c.nombre) : LBL[x.tipo]}</b><small>${c ? LBL[x.tipo] : 'Caja'} · ${fCorta(x.fecha)}${x.nota ? ' · ' + esc(x.nota) : ''}</small></div><div class="amt ${entra(x) ? 'pos' : ''}">${entra(x) ? '+' : '−'}${money(x.valor)}</div>`;
+    return x.prestamo_id ? `<a class="row" href="#/prestamo/${x.prestamo_id}">${inner}</a>` : `<div class="row">${inner}${isAdmin() ? `<button class="icon-btn" data-act="borrar-caja" data-id="${x.id}" title="Borrar">${I.basura}</button>` : ''}</div>`;
+  }).join('');
 }
 const noEnc = (href, txt) => `<a class="back" href="${href}">${I.atras}${txt}</a>` + empty('No se encontró (pudo ser borrado).');
 
 /* ============================ Shell y ruteo ============================ */
 const app = $('#app');
 function vShell() {
-  const nav = [['inicio', 'Inicio', I.panel], ['clientes', 'Clientes', I.clientes], ['caja', 'Caja', I.caja]];
+  const nav = [['inicio', 'Inicio', I.panel], ['clientes', 'Clientes', I.clientes]];
   const brand = `<div class="brand"><span class="logo img">${I.cobrar}</span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>${esc(CONFIG.LEMA)}</small></div></div>`;
   const tools = `<button class="icon-btn" data-act="privado" title="Ocultar / mostrar montos">${document.body.classList.contains('privado') ? I.ojoNo : I.ojo}</button><button class="icon-btn" data-act="ajustes" title="Ajustes">${I.ajustes}</button><button class="icon-btn" data-act="salir" title="Cerrar sesión">${I.salir}</button>`;
   app.innerHTML = `${DEMO ? '<div class="demo-bar">Modo de prueba · los datos se guardan solo en este navegador. Conecta Supabase para usarla de verdad.</div>' : ''}
   <div class="shell">
     <aside class="side">${brand}<nav class="nav">${nav.map(([r, l, i]) => `<a href="#/${r}" data-r="${r}">${i}${l}</a>`).join('')}</nav>
-      <div style="padding:14px 4px 0"><button class="btn primary block" data-act="nuevo-prestamo">${I.plus}Nuevo préstamo</button></div><div class="grow"></div>
+<div class="grow"></div>
       <div class="userbox"><div class="who"><b>${esc(S.user.nombre || S.user.email)}</b><small>${S.user.rol === 'admin' ? 'Administrador' : 'Operador'}</small></div>${tools}</div></aside>
     <div style="min-width:0"><div class="mtop">${brand}${tools}</div><main class="main" id="main"></main></div>
   </div>
   <nav class="bnav"><a href="#/inicio" data-r="inicio">${I.panel}Inicio</a><a href="#/clientes" data-r="clientes">${I.clientes}Clientes</a>
-    <button data-act="rapido" aria-label="Nuevo"><span class="plus">${I.plus}</span></button>
-    <a href="#/caja" data-r="caja">${I.caja}Caja</a><button data-act="ajustes">${I.ajustes}Ajustes</button></nav>
+    <button data-act="ajustes">${I.ajustes}Ajustes</button></nav>
   <div id="modal-root"></div><div id="toasts"></div>`;
 }
 function render() {
@@ -731,7 +716,7 @@ function render() {
   const sec = { cliente: 'clientes', prestamo: 'clientes' }[v] || v;
   document.querySelectorAll('[data-r]').forEach(a => a.classList.toggle('on', a.dataset.r === sec));
   const fid = document.activeElement && document.activeElement.id;
-  const V = { inicio: vInicio, clientes: vClientes, cliente: () => vCliente(id), prestamo: () => vPrestamo(id), caja: vCaja };
+  const V = { inicio: vInicio, clientes: vClientes, cliente: () => vCliente(id), prestamo: () => vPrestamo(id) };
   $('#main').innerHTML = (V[v] || vInicio)();
   if (fid) { const el = document.getElementById(fid); if (el && el.closest('#main')) { el.focus(); try { el.setSelectionRange(el.value.length, el.value.length); } catch {} } }
 }
@@ -865,8 +850,9 @@ function formAjustes() {
     ${fld('¿A los cuántos días sin pagar queda en mora?', `<input name="dias_mora" type="number" min="1" max="90" value="${S.aj.dias_mora}">`)}
     <p class="muted" style="font-size:13px;margin:-4px 0 14px">Valores que salen por defecto al crear un préstamo:</p>
     <div class="g3">${fld('Interés %', `<input name="tasa" inputmode="decimal" value="${S.aj.tasa}">`)}${fld('Meses', `<input name="meses" inputmode="decimal" value="${S.aj.meses}">`)}${fld('Cuotas', `<input name="cuotas" type="number" min="1" value="${S.aj.cuotas}">`)}</div>
-    <button type="button" class="btn sm" data-tema>${I.luna}Cambiar a modo ${document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? 'claro' : 'oscuro'}</button>
-    <button type="button" class="btn sm" data-clave style="margin-left:6px">${I.candado}Cambiar mi contraseña</button>
+<div class="actions-inline" style="margin-top:0">    <button type="button" class="btn sm" data-tema>${I.luna}Cambiar a modo ${document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? 'claro' : 'oscuro'}</button>
+    <button type="button" class="btn sm" data-act="csv">${I.descargar}Descargar todo en Excel</button>
+    <button type="button" class="btn sm" data-clave>${I.candado}Cambiar mi contraseña</button></div>
     ${DEMO ? '<p style="margin:16px 0 0"><button type="button" class="btn sm" data-reset style="color:var(--rojo)">Borrar todos los datos de prueba</button></p>' : ''}`,
     { onSubmit: async d => {
       await DB.ajustes({ dias_mora: Math.max(1, parseInt(d.dias_mora) || 5), tasa: dec(d.tasa), meses: Math.max(0.25, dec(d.meses) || 1), cuotas: Math.max(1, parseInt(d.cuotas) || 1) });
@@ -928,7 +914,7 @@ const ACT = {
   'borrar-pago': d => { const x = S.pagos.find(y => y.id === d.id); borrar(`Se borrará el pago de ${fmt(x.valor)} del ${fFecha(x.fecha)}.`, async () => { await DB.remove('pagos', d.id); toast('Pago borrado'); after(); }); },
   'borrar-caja': d => borrar('Se borrará este movimiento de caja.', async () => { await DB.remove('caja', d.id); toast('Movimiento borrado'); after(); }),
   'filtro': d => { S.f.sem = d.v; render(); },
-  'periodo': d => { S.f.periodo = d.v; render(); },
+  'ver-movs': () => { S.f.verMovs = !S.f.verMovs; render(); },
   'ver-sem': d => { S.f.sem = d.v; S.f.q = ''; location.hash = '#/clientes'; },
   'csv': () => exportarCSV(),
   'privado': () => { const on = document.body.classList.toggle('privado'); lsSet('cartera.privado', on ? '1' : ''); document.querySelectorAll('[data-act="privado"]').forEach(b => b.innerHTML = on ? I.ojoNo : I.ojo); },
