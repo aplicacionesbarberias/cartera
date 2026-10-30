@@ -324,6 +324,13 @@ body{background:var(--bg);isolation:isolate}
 .login-card .logo.img{width:46px;height:46px;border-radius:12px}
 .login-card .brand b{font-size:17px}
 .top-act .btn.keep .lbl{display:inline!important}
+.install-bar{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:14px;border-radius:var(--r);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));background:color-mix(in srgb,var(--accent-soft) 70%,var(--surface))}
+.install-bar .logo{width:40px;height:40px;border-radius:11px;flex:none}
+.install-bar b{display:block;font-size:14.5px}
+.install-bar small{display:block;color:var(--muted);font-size:12.5px}
+.login-card .install-bar{margin:0}
+@media (max-width:520px){.install-bar{flex-wrap:wrap}.install-bar .btn{width:100%;height:40px}}
+.pasos{margin:4px 0 0;padding-left:20px;display:grid;gap:8px;font-size:14.5px}
 </style>
 </head>
 <body>
@@ -602,7 +609,7 @@ function vInicio() {
   const vacio = !S.prestamos.length;
   return head('Inicio', fecha.charAt(0).toUpperCase() + fecha.slice(1),
     `${act.length ? `<button class="btn keep" data-act="pago-rapido">${I.cobrar}<span class="lbl">Registrar pago</span></button>` : ''}<button class="btn primary keep" data-act="nuevo-prestamo">${I.plus}<span class="lbl">Nuevo préstamo</span></button>`) +
-  `<div class="hero">
+  `<div data-instalar-slot>${bannerInstalar()}</div><div class="hero">
     <div class="caja"><small>Dinero disponible para prestar</small><div class="big">${T.disponible < 0 ? '−' : ''}${money(Math.abs(T.disponible))}</div>
       <div class="btns"><button class="btn" data-act="aporte">${I.plus}Agregar dinero</button><button class="btn" data-act="retiro">Sacar dinero</button></div></div>
     <div class="kpis">
@@ -920,6 +927,7 @@ const ACT = {
   'privado': () => { const on = document.body.classList.toggle('privado'); lsSet('cartera.privado', on ? '1' : ''); document.querySelectorAll('[data-act="privado"]').forEach(b => b.innerHTML = on ? I.ojoNo : I.ojo); },
   'tema': () => { const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); const nx = cur === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = nx; lsSet('cartera.tema', nx); },
   'salir': () => salir(),
+  'instalar': () => instalarApp(),
 };
 document.addEventListener('click', ev => { const el = ev.target.closest('[data-act]'); if (!el) return; ev.preventDefault(); const fn = ACT[el.dataset.act]; if (fn) fn(el.dataset); });
 document.addEventListener('input', ev => {
@@ -934,6 +942,7 @@ function vLogin(msg, ok) {
   app.innerHTML = `<div class="login"><form class="login-card" id="f-login">
     <div class="brand"><span class="logo img"></span><div><b>${esc(CONFIG.NOMBRE_NEGOCIO)}</b><small>${esc(CONFIG.LEMA)} · acceso privado</small></div></div>
     ${DEMO ? '<div class="note">Modo de prueba: escribe cualquier correo y contraseña.</div>' : ''}
+    <div data-instalar-slot>${bannerInstalar()}</div>
     ${msg ? `<div class="${ok ? 'okmsg' : 'alert'}">${esc(msg)}</div>` : ''}
     <label>Correo<input name="email" type="email" required autocomplete="username" inputmode="email"></label>
     <label>Contraseña<input name="password" type="password" required autocomplete="current-password"></label>
@@ -1020,6 +1029,43 @@ async function boot() {
   const { data: { session } } = await sb.auth.getSession();
   if (recuperacion && session) { vNuevaClave(); return; }
   if (session) await entrar(session.user); else vLogin();
+}
+/* ===================== Instalar como aplicación ===================== */
+let eventoInstalar = null;
+const enModoApp = () => matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true;
+let appInstalada = enModoApp() || lsGet('cartera.instalada') === '1';
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function bannerInstalar() {
+  if (appInstalada) return '';
+  return `<div class="install-bar"><span class="logo img"></span><div class="grow"><b>Descarga la app V&amp;A</b><small>Queda en tu celular como una aplicación más.</small></div>
+    <button class="btn primary sm" data-act="instalar">${I.descargar}Descargar aplicación</button></div>`;
+}
+function refrescarInstalar() { document.querySelectorAll('[data-instalar-slot]').forEach(el => { el.innerHTML = bannerInstalar(); }); }
+function marcarInstalada() { appInstalada = true; lsSet('cartera.instalada', '1'); eventoInstalar = null; refrescarInstalar(); }
+addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); eventoInstalar = e;
+  // Si el navegador ofrece instalar, es porque NO está instalada (aunque antes lo creyéramos)
+  appInstalada = enModoApp(); lsSet('cartera.instalada', ''); refrescarInstalar();
+});
+addEventListener('appinstalled', () => { marcarInstalada(); toast('¡Aplicación instalada! Búscala en tu pantalla de inicio.'); });
+matchMedia('(display-mode: standalone)').addEventListener?.('change', ev => { if (ev.matches) marcarInstalada(); });
+if (enModoApp()) lsSet('cartera.instalada', '1');
+if ('getInstalledRelatedApps' in navigator) navigator.getInstalledRelatedApps().then(a => { if (a && a.length) marcarInstalada(); }).catch(() => {});
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+async function instalarApp() {
+  if (eventoInstalar) {
+    const ev = eventoInstalar; ev.prompt();
+    try { const r = await ev.userChoice; if (r.outcome === 'accepted') marcarInstalada(); } catch {}
+    eventoInstalar = null; return;
+  }
+  const pasos = esIOS
+    ? `<ol class="pasos"><li>Abre este enlace en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (el cuadrito con la flecha hacia arriba).</li><li>Elige <b>“Agregar a inicio”</b> y toca <b>Agregar</b>.</li></ol>`
+    : `<ol class="pasos"><li>Abre este enlace en <b>Google Chrome</b>.</li><li>Toca el menú <b>⋮</b> (arriba a la derecha).</li><li>Elige <b>“Instalar aplicación”</b> o <b>“Agregar a la pantalla principal”</b>.</li></ol>
+       <p class="muted" style="font-size:13px;margin:10px 0 0">Si Chrome dice <b>“Ya se instaló esta app”</b>, búscala en tus aplicaciones como <b>V&amp;A</b>. Si no aparece, mantén presionado el ícono viejo, desinstálalo y vuelve a intentar.</p>`;
+  modal('Descargar la aplicación', `<div class="mini"><b>V&amp;A · Tu cartera siempre contigo</b><span>Es gratis y ocupa muy poco espacio.</span></div>${pasos}
+    <p style="margin:14px 0 0"><button type="button" class="link" data-ya>Ya la tengo instalada, ocultar este botón</button></p>`,
+    { submitText: 'Entendido', onSubmit: () => {} });
+  $('#dlg').addEventListener('click', ev => { if (ev.target.closest('[data-ya]')) { marcarInstalada(); cerrarModal(); } });
 }
 boot();
 </script>
